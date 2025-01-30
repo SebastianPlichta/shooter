@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 public class Bullet extends Entity {
 
     public Bullet(Texture texture){
-        super(texture,100,new Vector2(0,0));
+        super(texture,500,new Vector2(0,0));
     }
 
     public void shoot(float x, float y, Vector2 velocity){

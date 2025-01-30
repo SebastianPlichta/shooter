@@ -16,7 +16,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.github.shooter.entity.Bullet;
 import io.github.shooter.entity.Player;
+import io.github.shooter.entity.Zombie;
 import io.github.shooter.managers.GameManager;
+import io.github.shooter.managers.ObjectManager;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
@@ -24,9 +26,9 @@ public class Main extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Stage stage;
     private FitViewport viewport;
-    private Player player;
     private Bullet bullet;
     private GameManager gameManager;
+    private ObjectManager objectManager;
     private boolean shoot;
 
     @Override
@@ -36,17 +38,21 @@ public class Main extends ApplicationAdapter {
 
         camera = new OrthographicCamera(width,height);
         viewport = new FitViewport(width,height, camera);
-        stage = new Stage();
-        gameManager = new GameManager();
 
+        stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
-        player = new Player(gameManager.getTextureManager().getPlayer(), 100,100);
+        gameManager = new GameManager();
+        objectManager = new ObjectManager(gameManager.getTextureManager(),stage);
+
+        objectManager.addPlayer();
+        objectManager.addZombie();
+
+
         bullet = new Bullet(gameManager.getTextureManager().getBullet());
 
         Gdx.graphics.setWindowedMode(1600,900);
         stage.addActor(bullet);
-        stage.addActor(player);
     }
 
     @Override
@@ -61,23 +67,23 @@ public class Main extends ApplicationAdapter {
 
         boolean none = true;
         if(Gdx.input.isKeyPressed(Input.Keys.A)){
-            player.setVelocityX(-1);
+            objectManager.getPlayer().setVelocityX(-1);
             none = false;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            player.setVelocityX(1);
+            objectManager.getPlayer().setVelocityX(1);
             none = false;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            player.setVelocityY(1);
+            objectManager.getPlayer().setVelocityY(1);
             none = false;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            player.setVelocityY(-1);
+            objectManager.getPlayer().setVelocityY(-1);
             none = false;
         }
         if(none){
-            player.setVelocity(0,0);
+            objectManager.getPlayer().setVelocity(0,0);
         }
 
         shoot = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
@@ -89,10 +95,8 @@ public class Main extends ApplicationAdapter {
         Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(mousePos);
 
-        float dx = mousePos.x - player.getX();
-        float dy = mousePos.y - player.getY();
-
-
+        float dx = mousePos.x - objectManager.getPlayer().getX();
+        float dy = mousePos.y - objectManager.getPlayer().getY();
 
         float angle = MathUtils.atan2(dy, dx);
         float angleDegrees = angle * MathUtils.radiansToDegrees;
@@ -100,10 +104,10 @@ public class Main extends ApplicationAdapter {
         if(shoot){
             float length = (float) Math.sqrt(dx * dx + dy * dy);
             bullet.setRotation(angleDegrees);
-            bullet.shoot(player.getX(),player.getY(),new Vector2(dx/length,dy/length));
+            bullet.shoot(objectManager.getPlayer().getX(),objectManager.getPlayer().getY(),new Vector2(dx/length,dy/length));
         }
 
-        player.setRotation(angleDegrees);
+        objectManager.getPlayer().setRotation(angleDegrees);
 
         stage.act();
     }

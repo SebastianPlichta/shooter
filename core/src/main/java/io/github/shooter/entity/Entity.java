@@ -10,17 +10,25 @@ public abstract class Entity extends Actor {
     protected Texture texture;
     protected int speed;
     protected Vector2 velocity;
+    private int hp;
+    private boolean visible = true;
 
     public Entity(Texture texture,int speed, Vector2 velocity){
         this.texture = texture;
         this.speed = speed;
         this.velocity = velocity;
+        hp = 1;
     }
 
     @Override
     public void act(float delta) {
         setX(getX()+velocity.x * delta*speed);
         setY(getY()+velocity.y * delta*speed);
+
+        if(hp < 1){
+            visible = false;
+        }
+
     }
 
     public void setVelocity(float x, float y) {
@@ -36,9 +44,14 @@ public abstract class Entity extends Actor {
         this.velocity.y = y;
     }
 
+    public void takeDamage(){
+        hp --;
+    }
+
     @Override
     public void draw(Batch batch, float parentAlpha) {
-
-        batch.draw(texture,getX(),getY(), getOriginX(),getOriginY(),texture.getWidth(),texture.getHeight(),getScaleX(),getScaleY(),getRotation(), 0, 0, texture.getWidth(), texture.getHeight(),false,false);
+        if(visible){
+            batch.draw(texture,getX(),getY(), getOriginX(),getOriginY(),texture.getWidth(),texture.getHeight(),getScaleX(),getScaleY(),getRotation(), 0, 0, texture.getWidth(), texture.getHeight(),false,false);
+        }
     }
 }
