@@ -8,8 +8,20 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class Bullet extends Entity {
 
-    public Bullet(Texture texture){
-        super(texture,500,new Vector2(0,0));
+    float lifeTime;
+
+    public Bullet(Texture texture, int id){
+        super(texture,500,new Vector2(0,0), id);
+        lifeTime = 2;
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        lifeTime -= delta;
+        if(lifeTime <= 0){
+            remove();
+        }
     }
 
     public void shoot(float x, float y, Vector2 velocity){

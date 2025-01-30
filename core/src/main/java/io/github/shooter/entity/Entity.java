@@ -12,11 +12,13 @@ public abstract class Entity extends Actor {
     protected Vector2 velocity;
     private int hp;
     private boolean visible = true;
+    private int id;
 
-    public Entity(Texture texture,int speed, Vector2 velocity){
+    public Entity(Texture texture,int speed, Vector2 velocity, int id){
         this.texture = texture;
         this.speed = speed;
         this.velocity = velocity;
+        this.id = id;
         hp = 1;
     }
 
@@ -26,7 +28,7 @@ public abstract class Entity extends Actor {
         setY(getY()+velocity.y * delta*speed);
 
         if(hp < 1){
-            visible = false;
+            remove();
         }
 
     }
@@ -46,6 +48,10 @@ public abstract class Entity extends Actor {
 
     public void takeDamage(){
         hp --;
+    }
+
+    public int getId() {
+        return id;
     }
 
     @Override

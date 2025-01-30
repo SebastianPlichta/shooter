@@ -26,10 +26,10 @@ public class Main extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Stage stage;
     private FitViewport viewport;
-    private Bullet bullet;
     private GameManager gameManager;
     private ObjectManager objectManager;
     private boolean shoot;
+    private Vector3 mousePos;
 
     @Override
     public void create() {
@@ -48,11 +48,7 @@ public class Main extends ApplicationAdapter {
         objectManager.addPlayer();
         objectManager.addZombie();
 
-
-        bullet = new Bullet(gameManager.getTextureManager().getBullet());
-
         Gdx.graphics.setWindowedMode(1600,900);
-        stage.addActor(bullet);
     }
 
     @Override
@@ -88,27 +84,20 @@ public class Main extends ApplicationAdapter {
 
         shoot = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
 
+        if(shoot){
+            objectManager.getPlayer().shot(objectManager);
+        }
+
     }
 
     private void update(float deltaTime){
 
-        Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+        mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(mousePos);
 
-        float dx = mousePos.x - objectManager.getPlayer().getX();
-        float dy = mousePos.y - objectManager.getPlayer().getY();
+        objectManager.getPlayer().updateMousePos(mousePos);
 
-        float angle = MathUtils.atan2(dy, dx);
-        float angleDegrees = angle * MathUtils.radiansToDegrees;
-
-        if(shoot){
-            float length = (float) Math.sqrt(dx * dx + dy * dy);
-            bullet.setRotation(angleDegrees);
-            bullet.shoot(objectManager.getPlayer().getX(),objectManager.getPlayer().getY(),new Vector2(dx/length,dy/length));
-        }
-
-        objectManager.getPlayer().setRotation(angleDegrees);
-
+        objectManager.checkCollision();
         stage.act();
     }
 
