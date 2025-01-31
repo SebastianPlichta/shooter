@@ -6,6 +6,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -26,10 +28,20 @@ public class Main extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Stage stage;
     private FitViewport viewport;
+
     private GameManager gameManager;
     private ObjectManager objectManager;
+
+    private Batch batch;
+    private BitmapFont font;
+
     private boolean shoot;
     private Vector3 mousePos;
+
+    private float fps;
+    private float fpss;
+    private float runtime;
+    private float timer;
 
     @Override
     public void create() {
@@ -46,9 +58,14 @@ public class Main extends ApplicationAdapter {
         objectManager = new ObjectManager(gameManager.getTextureManager(),stage);
 
         objectManager.addPlayer();
-        objectManager.addZombie();
+        objectManager.addZombie(100,50);
+        objectManager.addZombie(200,200);
 
         Gdx.graphics.setWindowedMode(1600,900);
+
+        batch = new SpriteBatch();
+        font = new BitmapFont();
+
     }
 
     @Override
@@ -82,6 +99,12 @@ public class Main extends ApplicationAdapter {
             objectManager.getPlayer().setVelocity(0,0);
         }
 
+        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+            System.out.println("runtime: " + runtime);
+            System.out.println("average fps: " + fpss/runtime);
+            Gdx.app.exit();
+        }
+
         shoot = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
 
         if(shoot){
@@ -91,11 +114,19 @@ public class Main extends ApplicationAdapter {
     }
 
     private void update(float deltaTime){
-
+        fps = Gdx.graphics.getFramesPerSecond();
+        runtime += deltaTime;
+        timer += deltaTime;
+        if(timer >= 1){
+            fpss += fps;
+            timer = 0;
+        }
         mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(mousePos);
 
         objectManager.getPlayer().updateMousePos(mousePos);
+
+        objectManager.update();
 
         objectManager.checkCollision();
         stage.act();
@@ -103,9 +134,13 @@ public class Main extends ApplicationAdapter {
 
     private void draw(){
 
+        batch.setProjectionMatrix(camera.combined);
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         stage.draw();
 
+        batch.begin();
+        font.draw(batch,Float.toString(fps),20,20);
+        batch.end();
     }
 
     @Override
@@ -117,5 +152,7 @@ public class Main extends ApplicationAdapter {
     public void dispose() {
         gameManager.dispose();
         stage.dispose();
+        batch.dispose();
+        font.dispose();
     }
 }

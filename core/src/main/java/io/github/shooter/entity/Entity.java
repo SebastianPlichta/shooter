@@ -20,6 +20,7 @@ public abstract class Entity extends Actor {
         this.velocity = velocity;
         this.id = id;
         hp = 1;
+        this.setOrigin(texture.getWidth()/2, texture.getHeight()/2);
     }
 
     @Override
@@ -60,4 +61,9 @@ public abstract class Entity extends Actor {
             batch.draw(texture,getX(),getY(), getOriginX(),getOriginY(),texture.getWidth(),texture.getHeight(),getScaleX(),getScaleY(),getRotation(), 0, 0, texture.getWidth(), texture.getHeight(),false,false);
         }
     }
+
+    public Vector2 getPosition(){
+        return new Vector2(getX(),getY());
+    }
+
 }

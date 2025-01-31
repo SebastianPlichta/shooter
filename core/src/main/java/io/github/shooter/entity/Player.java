@@ -21,14 +21,13 @@ public class Player extends Entity {
         super(texture, 100, new Vector2(0,0), id);
         setX(x);
         setY(y);
-
-        this.setOrigin(texture.getWidth()/2, texture.getHeight()/2);
     }
 
     @Override
     public void act(float delta) {
 
         super.act(delta);
+
         float angle = MathUtils.atan2(dy, dx);
         angleDegrees = angle * MathUtils.radiansToDegrees;
         setRotation(angleDegrees);

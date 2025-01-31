@@ -28,7 +28,6 @@ public class Bullet extends Entity {
         setX(x);
         setY(y);
         this.velocity = velocity;
-        this.setOrigin(texture.getWidth()/2, texture.getHeight()/2);
     }
 
     @Override

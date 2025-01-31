@@ -17,6 +17,7 @@ public class ObjectManager {
     private Player player;
     int zombieCount = 0;
     int bulletCount = 0;
+    private final int ZOMBIESPEED = 50;
 
     public ObjectManager(TextureManager textureManager, Stage stage){
 
@@ -26,6 +27,12 @@ public class ObjectManager {
         bulletHashMap = new HashMap<>();
         zombieHashMap = new HashMap<>();
 
+    }
+
+    public void update(){
+        for(Zombie cZombie : zombieHashMap.values()){
+            cZombie.updatePlayerPosition(player.getPosition());
+        }
     }
 
     public void checkCollision(){
@@ -67,8 +74,8 @@ public class ObjectManager {
         stage.addActor(player);
     }
 
-    public void addZombie(){
-        Zombie newZombie = new Zombie(textureManager.getZombie(), 100, new Vector2(0,0), 200,50, zombieCount);
+    public void addZombie(int x, int y){
+        Zombie newZombie = new Zombie(textureManager.getZombie(), ZOMBIESPEED, new Vector2(0,0), x,y, zombieCount);
         stage.addActor(newZombie);
         zombieHashMap.put(zombieCount, newZombie);
         zombieCount ++;
@@ -85,4 +92,5 @@ public class ObjectManager {
     public Player getPlayer() {
         return player;
     }
+
 }
