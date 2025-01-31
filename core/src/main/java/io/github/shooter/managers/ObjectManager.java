@@ -12,6 +12,8 @@ public class ObjectManager {
 
     private TextureManager textureManager;
     private Stage stage;
+
+    private Stack<Bullet> bulletPool;
     private HashMap<Integer, Bullet> bulletHashMap;
     private HashMap<Integer, Zombie> zombieHashMap;
     private Player player;
@@ -24,6 +26,7 @@ public class ObjectManager {
         this.textureManager = textureManager;
         this.stage = stage;
 
+        bulletPool = new Stack<>();
         bulletHashMap = new HashMap<>();
         zombieHashMap = new HashMap<>();
 
@@ -37,29 +40,16 @@ public class ObjectManager {
 
     public void checkCollision(){
 
-        List<Integer> zombieToRemove = new ArrayList<>();
-        List<Integer> bulletToRemove = new ArrayList<>();
-
         for(Zombie cZombie :  zombieHashMap.values()){
 
             for(Bullet cBullet : bulletHashMap.values()){
                 float cX = Math.abs(cBullet.getX() - cZombie.getX());
                 float cY = Math.abs(cBullet.getY() - cZombie.getY());
                 if(cX > 0 && cX < 30 && cY > 0 && cY < 30){
-                    zombieToRemove.add(cZombie.getId());
-                    bulletToRemove.add(cBullet.getId());
                     cZombie.takeDamage();
-
                     cBullet.takeDamage();
                 }
             }
-        }
-
-        for(int dB : bulletToRemove){
-            bulletHashMap.remove(dB);
-        }
-        for(int dZ : zombieToRemove){
-            zombieHashMap.remove(dZ);
         }
 
     }
@@ -82,11 +72,21 @@ public class ObjectManager {
     }
 
     public Bullet addBullet(){
-        Bullet bullet = new Bullet(textureManager.getBullet(), bulletCount);
+        Bullet bullet;
+        if(bulletPool.isEmpty()) bulletPool.push(new Bullet(textureManager.getBullet(), bulletCount, this));
+
+        bullet = bulletPool.pop();
         stage.addActor(bullet);
-        bulletHashMap.put(bulletCount, bullet);
+        bulletHashMap.put(bullet.getId(), bullet);
         bulletCount ++;
         return bullet;
+    }
+
+    public void changeFromMapToPool(int id){
+
+        bulletPool.push(bulletHashMap.get(id));
+        bulletHashMap.remove(id);
+
     }
 
     public Player getPlayer() {

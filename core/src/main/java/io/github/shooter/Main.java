@@ -58,8 +58,8 @@ public class Main extends ApplicationAdapter {
         objectManager = new ObjectManager(gameManager.getTextureManager(),stage);
 
         objectManager.addPlayer();
-        objectManager.addZombie(100,50);
-        objectManager.addZombie(200,200);
+//        objectManager.addZombie(100,50);
+//        objectManager.addZombie(200,200);
 
         Gdx.graphics.setWindowedMode(1600,900);
 
